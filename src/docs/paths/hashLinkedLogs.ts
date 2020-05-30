@@ -2,6 +2,7 @@ import { HASH_LINKED_LOG_TAG } from "../tags";
 import { getSwaggerParameters, generateErrorResponses } from "../utils";
 import { writeLogEntrySchema } from "~api/schemas/hashLinkedLog";
 import { STATUS_CODES } from "~config/constants";
+import { corruptedLogFileError, entryNoLongerValidError } from '~api/errors';
 
 export default {
   '/entry': {
@@ -14,7 +15,7 @@ export default {
         [STATUS_CODES.NO_CONTENT]: {
           description: 'The entry was written ok',
         },
-        ...generateErrorResponses()
+        ...generateErrorResponses(corruptedLogFileError(), entryNoLongerValidError())
       }
     }
   }

@@ -4,6 +4,8 @@ export const uuidv4regExp = new RegExp(
   /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
 );
 
+export const HEX_CHAR_POOL = '0123456789abcdef';
+
 interface Methods {
   [key: string]: Method;
 }
@@ -37,3 +39,11 @@ export enum ENVIRONMENTS {
   TEST = 'test',
   DEVELOPMENT = 'development'
 }
+
+export const NONCE_AMOUNT_ZEROS = 2;
+
+export const LOG_FILE_NAME = 'hashLinkedLogs.csv';
+
+export const MIN_MESSAGE_LENGTH = 1;
+
+export const MAX_MESSAGE_LENGTH = 200;

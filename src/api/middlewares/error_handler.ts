@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 import { STATUS_CODES } from '~config/constants';
 import logger from '~libs/logger';
@@ -37,13 +37,13 @@ export const createError = (internalCode: string, statusCode: number): InternalE
 export function errorHandlerMiddleware(
   error: InternalError,
   req: Request,
-  res: Response
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  next: NextFunction
 ): Response | void {
-  if (error.internalCode) {
-    res.status(error.statusCode || DEFAULT_STATUS_CODE);
-  } else {
-    logger.error(inspect(error));
-    return res.status(DEFAULT_STATUS_CODE).send({ internal_code: DEFAULT_INTERNAL_CODE });
-  }
-  return res.send({ errors: error.errors, internal_code: error.internalCode });
+  logger.error(inspect(error));
+  return error.internalCode ? 
+    res.status(error.statusCode || DEFAULT_STATUS_CODE)
+      .send({ errors: error.errors, internal_code: error.internalCode }) :
+    res.status(DEFAULT_STATUS_CODE).send({ internal_code: DEFAULT_INTERNAL_CODE });
 }
