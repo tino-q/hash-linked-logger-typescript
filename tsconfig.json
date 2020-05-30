@@ -1,0 +1,60 @@
+{
+  "compilerOptions": {
+    /** Basic Options **/
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "lib": ["es2018", "es6"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "es2018",
+    "removeComments": true,
+
+    /** Strict Type-Checking Options **/
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true,
+
+    /** Additional Checks **/
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+
+    /** Source Map Options **/
+    "baseUrl": ".",
+    "typeRoots": ["node_modules/@types", "src/@types"],
+    "paths": {
+      "~app": ["src/app"],
+      "~api": ["src/api"],
+      "~api/*": ["src/api/*"],
+      "~tests": ["tests"],
+      "~tests/*": ["tests/*"],
+      "~docs": ["src/docs"],
+      "~config": ["src/config"],
+      "~config/*": ["src/config/*"],
+      "~libs": ["src/libs"],
+      "~libs/*": ["src/libs/*"],
+      "~loaders": ["src/loaders"],
+      "~loaders/*": ["src/loaders/*"],
+      "~utils": ["src/utils"],
+      "~utils/*": ["src/utils/*"]
+   },
+
+    /** Experimental Options **/
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "include": ["*/**/*.ts"]
+}
