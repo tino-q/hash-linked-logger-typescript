@@ -1,11 +1,13 @@
 import { Router } from 'express';
 
-import { generateHealthRoutes } from './routes/health';
+import { healthRouter } from './routes/health';
+import { hashLinkedLogRouter } from './routes/hashLinkedLog';
 
 export default function generateAppRoutes(): Router {
   const app = Router();
 
-  generateHealthRoutes(app);
+  healthRouter(app);
+  hashLinkedLogRouter(app);
 
   return app;
 }
