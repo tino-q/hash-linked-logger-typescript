@@ -4,7 +4,7 @@ import app from '~app';
 import { STATUS_CODES, MAX_MESSAGE_LENGTH } from '~config/constants';
 
 import { register as registerHashLinkedLogService } from '~api/services/hashLinkedLogs';
-import { entryNoLongerValidError, corruptedLogFileError } from '~api/errors';
+import { entryWasOutPacedByAnotherOne, corruptedLogFileError } from '~api/errors';
 import { InternalError } from '~api/middlewares/error_handler';
 import { range } from '~libs/utils';
 
@@ -46,7 +46,7 @@ describe('hashLinkedLog controller', () => {
 
     describe.each([
       ['corruptedLogFileError', corruptedLogFileError()],
-      ['entryNoLongerValidError', entryNoLongerValidError()]
+      ['entryWasOutPacedByAnotherOne', entryWasOutPacedByAnotherOne()]
     ])('when service throws error %s', (str: string, err: InternalError) => {
       let response: request.Response;
       const MESSAGE = 'SOME_TEST_MESSAGE';

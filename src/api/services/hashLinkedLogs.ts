@@ -4,7 +4,7 @@ import Mutex from '~libs/mutex';
 import { NONCE_AMOUNT_ZEROS } from '~config/constants';
 import { HashLinkedLog, buildInitialMessage } from '~api/models/HashLinkedLog';
 import { hashString, zeros, getUTCStringDate, getAllIndexesOf, unscapeCommas, escapeCommas } from '~libs/utils';
-import { entryNoLongerValidError, corruptedLogFileError, invalidLogMessageError } from '~api/errors';
+import { entryWasOutPacedByAnotherOne, corruptedLogFileError, invalidLogMessageError } from '~api/errors';
 import { createContainer, AwilixContainer, asValue } from 'awilix';
 
 const buildHashableString = (prevLog: HashLinkedLog, currentLog: HashLinkedLog): string => 
@@ -75,7 +75,7 @@ async function log(message: string): Promise<void> {
     try {
       const lastLine = await getLineRepository().getLastLine();
       if (lastLine && !hashCompareEntries(parseLine(lastLine), entry)) {
-        throw entryNoLongerValidError();
+        throw entryWasOutPacedByAnotherOne();
       }
       await getLineRepository().appendLine(stringifyHashLinkedLog(entry));
     } catch (e) {
