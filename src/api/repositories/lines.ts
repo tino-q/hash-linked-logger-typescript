@@ -30,7 +30,9 @@ interface ITextLiner {
 const REGISTRY_NAME = 'lineRepository';
 const container = createContainer();
 container.register(REGISTRY_NAME, asValue({ appendLine, getLines, getLastLine }));
+
 export default (): ITextLiner => container.cradle.lineRepository;
+
 export const register = (implementation: ITextLiner): AwilixContainer =>
   container.register(REGISTRY_NAME, asValue(implementation));
 

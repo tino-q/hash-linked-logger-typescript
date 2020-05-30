@@ -85,14 +85,16 @@ async function log(message: string): Promise<void> {
   });
 }
 
-
 interface IHashLinkedLogService {
   log: (message: string) => Promise<void>;
 }
+
 const REGISTRY_NAME = 'hashLinkedLogService';
 const container = createContainer();
 container.register(REGISTRY_NAME, asValue({ log }));
+
 export default (): IHashLinkedLogService => container.cradle[REGISTRY_NAME];
+
 export const register = (impl: IHashLinkedLogService): AwilixContainer =>
   container.register(REGISTRY_NAME, asValue(impl));
 
