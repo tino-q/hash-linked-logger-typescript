@@ -85,13 +85,20 @@ async function log(message: string): Promise<void> {
   });
 }
 
+export async function getLogs(): Promise<HashLinkedLog[]> {
+  const lines: string[] = await getLineRepository().getLines();
+  const logs: HashLinkedLog[] = lines.map(parseLine);
+  return logs;
+}
+
 interface IHashLinkedLogService {
   log: (message: string) => Promise<void>;
+  getLogs: () => Promise<HashLinkedLog[]>;
 }
 
 const REGISTRY_NAME = 'hashLinkedLogService';
 const container = createContainer();
-container.register(REGISTRY_NAME, asValue({ log }));
+container.register(REGISTRY_NAME, asValue({ log, getLogs }));
 
 export default (): IHashLinkedLogService => container.cradle[REGISTRY_NAME];
 

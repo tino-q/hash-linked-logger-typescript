@@ -4,6 +4,7 @@ import { INVALID_LOG_MESSAGE, CORRUPTED_LOG_FILE } from '~api/errors';
 import { InternalError } from '~api/middlewares/error_handler';
 import { getAllIndexesOf, unscapeCommas, hashString, escapeCommas } from '~libs/utils';
 import { NONCE_AMOUNT_ZEROS } from '~config/constants';
+import { HashLinkedLog } from '~api/models/HashLinkedLog';
 
 const lines: string[] = [];
 
@@ -158,6 +159,34 @@ describe('hashLinkedLog service', () => {
       test('There should be an error', () => expect(error).toBeDefined());
       test(`Error internal code should be ${INVALID_LOG_MESSAGE}`,
         () => expect(error?.internalCode).toBe(INVALID_LOG_MESSAGE));
+    });
+  });
+
+  describe('getLogs', () => {
+    describe('returning some logs', () => {
+      const LOG_LINES = [
+        `0037f12989d76a1f480ccb924aa9173e17dbbf836f71f04e1c46dbfd02f0b1c1,first log! =),2020-05-31T00:47:23.697Z,0`,
+        `00ef489c94ac56366f2af856913d81de6fccdb0c88aa74c2a2d26dfc35f7e70f,second log! =),2020-05-31T00:47:27.253Z,0`,
+        `00d257ce032a620a51c63795ed88600a74ef4341a10947ee9b1fbd06a1ce5d5a,the final log,2020-05-31T00:47:32.839Z,68`
+      ];
+      let logs: HashLinkedLog[] | undefined;
+      beforeAll(async (done: jest.DoneCallback) => {
+        lines.length = 0;
+        LOG_LINES.forEach((l: string) => lines.push(l));
+        logs = await getHashLinkedLogsService().getLogs();
+        done();
+      });
+      test(`There should be ${LOG_LINES.length} logs`, () => expect(logs?.length).toBe(LOG_LINES.length));
+    });
+
+    describe('without logs', () => {
+      let logs: HashLinkedLog[] | undefined;
+      beforeAll(async (done: jest.DoneCallback) => {
+        lines.length = 0;
+        logs = await getHashLinkedLogsService().getLogs();
+        done();
+      });
+      test('There should be no logs', () => expect(logs?.length).toBe(0));
     });
   });
 });

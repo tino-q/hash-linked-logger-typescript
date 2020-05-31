@@ -1,26 +1,9 @@
 import { HashLinkedLog } from "~api/models/HashLinkedLog";
 
-export function serializeLogs(logs: HashLinkedLog[]): Record<string, string> {
-  return logs.reduce((acum: Record<string, string>, curr: HashLinkedLog): Record<string, string> => ({
-    ...acum,
-    [curr.date]: curr.message
-  }), {});
+export function serializeLogs(logs: HashLinkedLog[]): [string, string][] {
+  const sortedLogs = logs.sort((a: HashLinkedLog, b: HashLinkedLog) =>
+    Date.parse(a.date) - Date.parse(b.date));
+  return sortedLogs.reduce((acum: [string, string][], curr: HashLinkedLog): [string, string][] => {
+    return [...acum, [curr.date, curr.message]];
+  }, []);
 }
-
-/*
-
-import { serializeLogs } from '~api/serializers/hashLinkedLogs';
-export async function getLogEntries(req: Request, res: Response): Promise<Response> {
-  const logs = await services.hashLinkedLogs.getLogs();
-  return res.status(STATUS_CODES.OK).send(serializeLogs(logs));
-}
-
-
-export async function getLogs(): Promise<HashLinkedLog[]> {
-  const lines: string[] = await getLineRepository().getLines();
-  const logs: HashLinkedLog[] = lines.map(parseLine);
-  return logs;
-}
-
-
-*/

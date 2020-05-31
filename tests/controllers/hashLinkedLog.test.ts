@@ -7,6 +7,16 @@ import { register as registerHashLinkedLogService } from '~api/services/hashLink
 import { entryWasOutPacedByAnotherOne, corruptedLogFileError } from '~api/errors';
 import { InternalError } from '~api/middlewares/error_handler';
 import { range } from '~libs/utils';
+import { HashLinkedLog } from '~api/models/HashLinkedLog';
+
+const DEFAULT_SERVICE_STUB = {
+  log: async (line: string): Promise<void> => {
+    await Promise.resolve(line);
+  },
+  getLogs: async (): Promise<HashLinkedLog[]> => {
+    return Promise.resolve([]);
+  }
+};
 
 describe('hashLinkedLog controller', () => {
   describe('/logs/entry POST', () => {
@@ -31,11 +41,7 @@ describe('hashLinkedLog controller', () => {
       let response: request.Response;
       const MESSAGE = 'SOME_TEST_MESSAGE';
       beforeAll(async (done: jest.DoneCallback) => {
-        registerHashLinkedLogService({
-          log: async (line: string): Promise<void> => {
-            await Promise.resolve(line);
-          },
-        });
+        registerHashLinkedLogService(DEFAULT_SERVICE_STUB);
         response = await request(app).post('/logs/entry').send({ message: MESSAGE });
         done();
       });
@@ -52,6 +58,7 @@ describe('hashLinkedLog controller', () => {
       const MESSAGE = 'SOME_TEST_MESSAGE';
       beforeAll(async (done: jest.DoneCallback) => {
         registerHashLinkedLogService({
+          ...DEFAULT_SERVICE_STUB,
           log: async (line: string): Promise<void> => {
             await Promise.resolve(line);
             throw err;
@@ -64,6 +71,52 @@ describe('hashLinkedLog controller', () => {
           () => expect(response.status).toBe(err.statusCode));
       test(`Response internal code should be ${err.internalCode}`,
           () => expect(response.body.internal_code).toBe(err.internalCode));
+    });
+  });
+
+  describe('/logs GET', () => {
+    describe('with no logs', () => {
+      let response: request.Response;
+      beforeAll(async (done: jest.DoneCallback) => {
+        registerHashLinkedLogService(DEFAULT_SERVICE_STUB);
+        response = await request(app).get('/logs');
+        done();
+      });
+      test(`Response status should be ${STATUS_CODES.OK}`,
+        () => expect(response.status).toBe(STATUS_CODES.OK));
+      test('Response body should be empty', () => expect(response.body).toEqual({logs:[]}));
+    });
+
+    describe('with logs', () => {
+      let response: request.Response;
+      const LOGS = [
+        {
+          message: 'first message',
+          nonce: 0,
+          prevHash: 'prevHash',
+          date: new Date().toISOString(),
+        },
+        {
+          message: 'another message',
+          nonce: 0,
+          prevHash: 'prevHash',
+          date: new Date().toISOString(),
+        }
+      ];
+      beforeAll(async (done: jest.DoneCallback) => {
+        registerHashLinkedLogService({
+          ...DEFAULT_SERVICE_STUB,
+          getLogs: (): Promise<HashLinkedLog[]> => Promise.resolve(LOGS)
+        });
+        response = await request(app).get('/logs');
+        done();
+      });
+      test(`Response status should be ${STATUS_CODES.OK}`,
+        () => expect(response.status).toBe(STATUS_CODES.OK));
+      test('Response body should contain the logs', () => expect(response.body).toEqual({logs: [
+        [LOGS[0].date, LOGS[0].message],
+        [LOGS[1].date, LOGS[1].message]
+      ]}));
     });
   });
 });
