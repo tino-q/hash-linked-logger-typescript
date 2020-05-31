@@ -6,6 +6,7 @@ import { HashLinkedLog, buildInitialMessage } from '~api/models/HashLinkedLog';
 import { hashString, zeros, getUTCStringDate, getAllIndexesOf, unscapeCommas, escapeCommas } from '~libs/utils';
 import { entryWasOutPacedByAnotherOne, corruptedLogFileError, invalidLogMessageError } from '~api/errors';
 import { createContainer, AwilixContainer, asValue } from 'awilix';
+import logger from '~libs/logger';
 
 const buildHashableString = (prevLog: HashLinkedLog, currentLog: HashLinkedLog): string => 
   `${prevLog.prevHash},${prevLog.message},${currentLog.message},${currentLog.date},${currentLog.nonce}`;
@@ -28,6 +29,7 @@ const parseLine = (l: string): HashLinkedLog => {
 };
 
 async function validateLogs(logs: HashLinkedLog[]): Promise<void> {
+  logger.info('Validating logs');
   for (let i = 1; i < logs.length; i++) {
     if (!hashCompareEntries(logs[i - 1], logs[i])) {
       throw corruptedLogFileError({
@@ -37,6 +39,7 @@ async function validateLogs(logs: HashLinkedLog[]): Promise<void> {
       });
     }
   }
+  logger.info('Log database is ok!');
 };
 
 const stringifyHashLinkedLog = (log: HashLinkedLog): string =>
@@ -47,6 +50,7 @@ async function buildLogEntry(message: string): Promise<HashLinkedLog> {
   const logs: HashLinkedLog[] = lines.map(parseLine);
   const lastLog = logs[logs.length - 1];
   if (!lastLog) {
+    logger.info('Database is emtpy! creating the first log with random hash');
     return buildInitialMessage(message);
   }
   await validateLogs(logs);
@@ -60,6 +64,7 @@ async function buildLogEntry(message: string): Promise<HashLinkedLog> {
     logDraft.nonce++;
     logDraft.prevHash = hashString(buildHashableString(lastLog, logDraft));
   }
+  logger.info(`Found ${logDraft.nonce} to generate hash ${logDraft.prevHash}`);
   return logDraft;
 }
 
@@ -74,9 +79,11 @@ async function log(message: string): Promise<void> {
   mutex.lock(async () => {
     try {
       const lastLine = await getLineRepository().getLastLine();
+      logger.info('Comparing the line to the previous line');
       if (lastLine && !hashCompareEntries(parseLine(lastLine), entry)) {
         throw entryWasOutPacedByAnotherOne();
       }
+      logger.info('Comparation OK!: saving log');
       await getLineRepository().appendLine(stringifyHashLinkedLog(entry));
     } catch (e) {
       console.log(e);
