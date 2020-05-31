@@ -6,6 +6,8 @@ As so we can guarantee the integrity of the databse by re-calculating all the ha
 
 Parallel requestes "compete" to find the nonce faster and secure themselves the entry in the log.
 
+The log is stored in the root folder with the name `hashLinkedLogs.csv`
+
 An example log file:
 ```
 00d2dc59a7bfcf15b4c7cc4977632c456d6926bec40bb817a31d2596725ad458,This is the first message!,2020-05-31T20:08:15.850Z,0
