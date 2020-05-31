@@ -1,5 +1,5 @@
 {
-  "name": "hash-linked-log",
+  "name": "hash-linked-logger",
   "version": "1.0.0",
   "description": "Hash linked log API for secure log history",
   "engines": {
