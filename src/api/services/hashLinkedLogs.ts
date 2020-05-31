@@ -88,6 +88,7 @@ async function log(message: string): Promise<void> {
 export async function getLogs(): Promise<HashLinkedLog[]> {
   const lines: string[] = await getLineRepository().getLines();
   const logs: HashLinkedLog[] = lines.map(parseLine);
+  await validateLogs(logs);
   return logs;
 }
 
