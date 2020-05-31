@@ -2,6 +2,8 @@
 
 This is a node-typescript API for securing logs in a csv file. Each log has a hash which is calculated from the previous log hash, the log message and a nonce. Requests attempting to write an entry must generate a proof of work by finding the nonce that returns a hash with NONCE_AMOUNT_ZEROS (currently set at 2) at the beginning.
 
+As so we can guarantee the integrity of the databse by re-calculating all the hashes.
+
 Parallel requestes "compete" to find the nonce faster and secure themselves the entry in the log.
 
 An example log file:
