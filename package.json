@@ -45,7 +45,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/lodash": "^4.14.152",
-    "ajv": "^6.12.0",
+    "ajv": "^6.12.3",
     "ajv-errors": "^1.0.1",
     "awilix": "^4.2.6",
     "axios": "^0.19.2",
