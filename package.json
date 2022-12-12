@@ -54,7 +54,7 @@
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "helmet": "^3.21.2",
     "lodash": "^4.17.15",
     "module-alias": "^2.2.2",
